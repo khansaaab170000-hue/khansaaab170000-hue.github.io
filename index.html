@@ -1,95 +1,100 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Maze Game - By Ameer Khan</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ameer AI BOT PRO - Ameer 5656</title>
 <style>
-body{margin:0;font-family:Arial;background:#0f172a;color:white;text-align:center;padding:15px}
-h1{color:#38bdf8;margin:5px}
-.top{background:#1e293b;max-width:420px;margin:10px auto;padding:12px;border-radius:15px;font-weight:bold}
-#board{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;max-width:420px;margin:10px auto;background:#334155;padding:8px;border-radius:12px}
-.cell{aspect-ratio:1;background:white;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:22px}
-.wall{background:#0f172a}
-button{background:#38bdf8;border:0;padding:12px 20px;border-radius:30px;font-weight:bold;font-size:16px;margin:5px}
-.btn2{background:#22c55e}
-#msg{color:#facc15;font-weight:bold}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#020617;color:white;padding:18px;text-align:center}
+.logo{width:90px;height:90px;background:linear-gradient(135deg,#38bdf8,#a855f7);border-radius:22px;margin:10px auto;display:flex;align-items:center;justify-content:center;font-size:48px}
+h1{font-size:32px} h1 span{color:#38bdf8;letter-spacing:5px}
+.box{max-width:430px;margin:16px auto;background:#0a1a3a;border:1px solid #1e40af;border-radius:25px;padding:22px}
+input,select{width:100%;padding:14px;border-radius:25px;border:1px solid #38bdf8;background:#0f172a;color:white;text-align:center;font-size:16px;margin:10px 0;outline:none}
+button{width:100%;padding:15px;border:0;border-radius:25px;background:linear-gradient(#38bdf8,#0284c7);color:white;font-weight:bold;font-size:17px;margin-top:10px;cursor:pointer}
+button.green{background:linear-gradient(#22c55e,#15803d)}
+button.orange{background:linear-gradient(#f59e0b,#d97706)}
+.small{color:#94a3b8;font-size:12px}
+#dash{display:none}
+.card{background:#1e293b;padding:14px;border-radius:15px;margin:10px 0;text-align:left;display:flex;justify-content:space-between;align-items:center}
+.green{color:#22c55e;font-weight:bold}.red{color:#ef4444;font-weight:bold}.yellow{color:#eab308;font-weight:bold}
+canvas{width:100%;height:130px;background:#020617;border-radius:15px;margin:12px 0}
+.opt{display:flex;gap:8px} .opt button{font-size:13px;padding:10px}
+.active{outline:2px solid white !important}
 </style>
 </head>
 <body>
-<h1>🧩 Maze Game</h1>
-<p>By Ameer Khan | 100% Free Fun Game</p>
 
-<div class="top">
-Level: <span id="level">1</span> | Score: <span id="score">0</span> | Moves: <span id="moves">0</span>
+<div id="login">
+<div class="logo">🤖</div>
+<h1>Ameer Signals<br><span>AI BOT PRO</span></h1>
+<p class="small">By Ameer 5656 • Full Options • Demo</p>
+<div class="box">
+<p>🔒 ENTER YOUR LICENSE KEY</p>
+<input id="key" placeholder="AMEER-5656">
+<button onclick="check()">✅ ACTIVATE LICENSE</button>
+<p id="msg"></p>
+<p class="small">License: <b style="color:white">AMEER-5656</b></p>
+</div>
 </div>
 
-<div id="board"></div>
-<p id="msg">😀 ko 🏆 tak pahuchao!</p>
-
-<div>
-<button onclick="move(-1,0)">⬆️ Up</button><br>
-<button onclick="move(0,-1)">⬅️ Left</button>
-<button onclick="move(0,1)">Right ➡️</button><br>
-<button onclick="move(1,0)">⬇️ Down</button>
+<div id="dash">
+<div class="box" style="text-align:left">
+<p>👑 Welcome, <b>Ameer 5656</b> | License: AMEER-5656 ✅</p>
+<h3 style="margin:12px 0">1️⃣ Apna Option Chuno:</h3>
+<label class="small">Pair Chuno:</label>
+<select id="pair">
+<option>BTC/USD</option><option>EUR/USD</option><option>GBP/USD</option><option>GOLD</option><option>USD/JPY</option><option>ETH/USD</option>
+</select>
+<label class="small">Timeframe Chuno:</label>
+<select id="tf"><option>1 Minute</option><option>5 Minutes</option><option>15 Minutes</option><option>1 Hour</option></select>
+<label class="small">Signal Type:</label>
+<div class="opt">
+<button onclick="setType(this,'SCALPING')">⚡ SCALPING</button>
+<button onclick="setType(this,'LONG')">📈 LONG</button>
+<button onclick="setType(this,'SHORT')">📉 SHORT</button>
 </div>
-<br>
-<button class="btn2" onclick="nextLevel()">Next Level ➡️</button>
-<button onclick="location.reload()">🔄 Restart</button>
-<br><br>
-<a href="index.html" style="color:#38bdf8">Back to Portfolio</a>
+<p class="small" style="margin-top:8px">Selected: <b id="showType">SCALPING</b></p>
+<button class="green" onclick="getSignal()">🎯 SIGNAL LO - ABHI</button>
+<button class="orange" onclick="newChart()">🔄 NAYA CHART</button>
+<canvas id="chart" width="380" height="130"></canvas>
+<div id="result"></div>
+</div>
+
+<div class="box">
+<h3 style="text-align:left">2️⃣ Aaj ke Signals:</h3>
+<div id="signals"></div>
+<button onclick="loadSignals()">🔄 NEW SIGNALS</button>
+<button onclick="location.reload()" style="background:#1e293b">🚪 LOGOUT</button>
+<p class="small" style="margin-top:10px">⚠️ Ye DEMO hai. Koi BOT 100% profit nahi deta. Real paisa mat lagao.</p>
+</div>
+</div>
 
 <script>
-let level=1, score=0, moves=0;
-let px=1, py=1;
-let maze=[
-[1,1,1,1,1,1,1],
-[1,0,0,1,0,0,1],
-[1,0,1,0,0,1,1],
-[1,0,0,0,1,0,1],
-[1,1,0,1,0,0,1],
-[1,0,0,0,0,2,1],
-[1,1,1,1,1,1,1]
-];
-function draw(){
-  let b=document.getElementById('board');
-  b.innerHTML='';
-  for(let i=0;i<7;i++){
-    for(let j=0;j<7;j++){
-      let d=document.createElement('div');
-      d.className='cell'+(maze[i][j]==1?' wall':'');
-      if(i==px && j==py) d.innerText='😀';
-      else if(maze[i][j]==2) d.innerText='🏆';
-      else if(maze[i][j]==1) d.innerText='';
-      b.appendChild(d);
-    }
-  }
-  document.getElementById('level').innerText=level;
-  document.getElementById('score').innerText=score;
-  document.getElementById('moves').innerText=moves;
+let type="SCALPING";
+function setType(el,t){type=t; document.getElementById('showType').innerText=t; document.querySelectorAll('.opt button').forEach(b=>b.classList.remove('active')); el.classList.add('active');}
+function check(){
+let k=document.getElementById('key').value.toUpperCase().trim();
+if(k==="AMEER-5656"){document.getElementById('login').style.display='none';document.getElementById('dash').style.display='block';newChart();loadSignals();}
+else{let m=document.getElementById('msg');m.innerText="❌ Galat License! Sahi hai: AMEER-5656";m.style.color="red";}
 }
-function move(dx,dy){
-  let nx=px+dx, ny=py+dy;
-  if(maze[nx][ny]==1) return;
-  px=nx; py=ny; moves++;
-  if(maze[px][py]==2){
-    score+=100;
-    document.getElementById('msg').innerText='Mubarak ho! Level Complete! 🎉 +100 Score';
-    alert('Jeet gaye bhai! Level '+level+' Complete!');
-  }
-  draw();
+function newChart(){
+let c=document.getElementById('chart'),x=c.getContext('2d');x.clearRect(0,0,380,130);x.strokeStyle="#38bdf8";x.lineWidth=3;x.beginPath();let y=80;x.moveTo(0,y);
+for(let i=0;i<380;i+=20){y=y+(Math.random()*30-15);x.lineTo(i,y);}x.stroke();x.fillStyle="#38bdf8";x.font="12px Arial";x.fillText("DEMO CHART - "+document.getElementById('pair').value,10,20);
 }
-function nextLevel(){
-  level++; score+=50; moves=0; px=1; py=1;
-  document.getElementById('msg').innerText='Level '+level+' Shuru! 😀 ko 🏆 tak pahuchao!';
-  draw();
+function getSignal(){
+let p=document.getElementById('pair').value, tf=document.getElementById('tf').value;
+let sig=Math.random()>0.5?"UP ⬆️ CALL":"DOWN ⬇️ PUT";
+let col=sig.includes("UP")?"green":"red";
+let conf=65+Math.floor(Math.random()*30);
+document.getElementById('result').innerHTML=`<div class="card"><div><b>${p}</b><br><span class="small">${type} • ${tf} • Demo</span></div><div style="text-align:right"><span class="${col}">${sig}</span><br><span class="small">Confidence: ${conf}%</span></div></div>`;
+newChart();
 }
-draw();
-document.addEventListener('keydown',e=>{
-  if(e.key=='ArrowUp') move(-1,0);
-  if(e.key=='ArrowDown') move(1,0);
-  if(e.key=='ArrowLeft') move(0,-1);
-  if(e.key=='ArrowRight') move(0,1);
-});
+function loadSignals(){
+let pairs=["BTC/USD","EUR/USD","GOLD","GBP/USD","ETH/USD"];
+let h=""; pairs.forEach(p=>{let up=Math.random()>0.5; h+=`<div class="card"><div><b>${p}</b><br><span class="small">Demo • Confidence ${60+Math.floor(Math.random()*30)}%</span></div><div><span class="${up?'green':'red'}">${up?'UP ⬆️':'DOWN ⬇️'}</span></div></div>`;});
+document.getElementById('signals').innerHTML=h;
+}
 </script>
 </body>
 </html>
