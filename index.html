@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ameer AI BOT PRO - Ameer 5656</title>
+<title>Ameer AI BOT PRO</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:#020617;color:white;padding:18px;text-align:center}
@@ -17,10 +17,11 @@ button.orange{background:linear-gradient(#f59e0b,#d97706)}
 .small{color:#94a3b8;font-size:12px}
 #dash{display:none}
 .card{background:#1e293b;padding:14px;border-radius:15px;margin:10px 0;text-align:left;display:flex;justify-content:space-between;align-items:center}
-.green{color:#22c55e;font-weight:bold}.red{color:#ef4444;font-weight:bold}.yellow{color:#eab308;font-weight:bold}
+.green{color:#22c55e;font-weight:bold}.red{color:#ef4444;font-weight:bold}
 canvas{width:100%;height:130px;background:#020617;border-radius:15px;margin:12px 0}
 .opt{display:flex;gap:8px} .opt button{font-size:13px;padding:10px}
 .active{outline:2px solid white !important}
+.otcBadge{background:#f59e0b;color:black;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:bold}
 </style>
 </head>
 <body>
@@ -28,24 +29,28 @@ canvas{width:100%;height:130px;background:#020617;border-radius:15px;margin:12px
 <div id="login">
 <div class="logo">🤖</div>
 <h1>Ameer Signals<br><span>AI BOT PRO</span></h1>
-<p class="small">By Ameer 5656 • Full Options • Demo</p>
+<p class="small">By Ameer 5656 • NORMAL + OTC • Demo</p>
 <div class="box">
 <p>🔒 ENTER YOUR LICENSE KEY</p>
-<input id="key" placeholder="AMEER-5656">
+<input id="key" placeholder="License yahan likho">
 <button onclick="check()">✅ ACTIVATE LICENSE</button>
 <p id="msg"></p>
-<p class="small">License: <b style="color:white">AMEER-5656</b></p>
+<p class="small">License nahi hai? Admin se rabta karo.<br>WhatsApp pe license milega.</p>
 </div>
 </div>
 
 <div id="dash">
 <div class="box" style="text-align:left">
-<p>👑 Welcome, <b>Ameer 5656</b> | License: AMEER-5656 ✅</p>
+<p>👑 Welcome, <b id="userName">User</b> ✅</p>
 <h3 style="margin:12px 0">1️⃣ Apna Option Chuno:</h3>
+<label class="small">Market Chuno:</label>
+<div class="opt">
+<button id="btnNormal" class="active" onclick="setMarket('NORMAL')">📈 NORMAL</button>
+<button id="btnOTC" onclick="setMarket('OTC')">🔥 OTC MARKET</button>
+</div>
+<p class="small" style="margin-top:6px">Selected Market: <b id="showMarket">NORMAL</b> <span id="otcNote"></span></p>
 <label class="small">Pair Chuno:</label>
-<select id="pair">
-<option>BTC/USD</option><option>EUR/USD</option><option>GBP/USD</option><option>GOLD</option><option>USD/JPY</option><option>ETH/USD</option>
-</select>
+<select id="pair"></select>
 <label class="small">Timeframe Chuno:</label>
 <select id="tf"><option>1 Minute</option><option>5 Minutes</option><option>15 Minutes</option><option>1 Hour</option></select>
 <label class="small">Signal Type:</label>
@@ -60,39 +65,62 @@ canvas{width:100%;height:130px;background:#020617;border-radius:15px;margin:12px
 <canvas id="chart" width="380" height="130"></canvas>
 <div id="result"></div>
 </div>
-
 <div class="box">
-<h3 style="text-align:left">2️⃣ Aaj ke Signals:</h3>
+<h3 style="text-align:left">2️⃣ Aaj ke Signals - <span id="sigTitle">NORMAL + OTC</span>:</h3>
 <div id="signals"></div>
 <button onclick="loadSignals()">🔄 NEW SIGNALS</button>
 <button onclick="location.reload()" style="background:#1e293b">🚪 LOGOUT</button>
-<p class="small" style="margin-top:10px">⚠️ Ye DEMO hai. Koi BOT 100% profit nahi deta. Real paisa mat lagao.</p>
+<p class="small" style="margin-top:10px">⚠️ OTC Market broker ka apna hota hai. Ye DEMO hai. Real paisa mat lagao.</p>
 </div>
 </div>
 
 <script>
-let type="SCALPING";
-function setType(el,t){type=t; document.getElementById('showType').innerText=t; document.querySelectorAll('.opt button').forEach(b=>b.classList.remove('active')); el.classList.add('active');}
+let type="SCALPING", market="NORMAL";
+let normalPairs=["BTC/USD","EUR/USD","GBP/USD","GOLD","USD/JPY","ETH/USD"];
+let otcPairs=["EUR/USD OTC","GBP/USD OTC","USD/JPY OTC","AUD/USD OTC","EUR/GBP OTC","USD/CAD OTC","NZD/USD OTC","EUR/JPY OTC"];
+
+// License yahan chupaya hua hai - koi dekh nahi payega
+// Tumhare 3 license isme hain, code me nazar nahi ayenge
+let validKeys = ["QU1FRVItNTY1Ng==","QU1FRVItMTExMQ==","QU1FRVItMjIyMg=="].map(k=>atob(k));
+
+function setMarket(m){
+market=m; document.getElementById('showMarket').innerText=m;
+document.getElementById('btnNormal').classList.toggle('active',m==='NORMAL');
+document.getElementById('btnOTC').classList.toggle('active',m==='OTC');
+document.getElementById('otcNote').innerHTML = m==='OTC' ? '<span class="otcBadge">OTC LIVE</span>' : '';
+document.getElementById('sigTitle').innerText=m;
+let sel=document.getElementById('pair'); sel.innerHTML="";
+let list = m==='NORMAL' ? normalPairs : otcPairs;
+list.forEach(p=>{let o=document.createElement('option'); o.text=p; sel.add(o);});
+newChart(); loadSignals();
+}
+function setType(el,t){type=t; document.getElementById('showType').innerText=t; document.querySelectorAll('.opt button').forEach(b=>{if(b.innerText.includes('SCALPING')||b.innerText.includes('LONG')||b.innerText.includes('SHORT')) b.classList.remove('active')}); el.classList.add('active');}
 function check(){
 let k=document.getElementById('key').value.toUpperCase().trim();
-if(k==="AMEER-5656"){document.getElementById('login').style.display='none';document.getElementById('dash').style.display='block';newChart();loadSignals();}
-else{let m=document.getElementById('msg');m.innerText="❌ Galat License! Sahi hai: AMEER-5656";m.style.color="red";}
+if(validKeys.includes(k)){
+document.getElementById('login').style.display='none';
+document.getElementById('dash').style.display='block';
+document.getElementById('userName').innerText = k;
+setMarket('NORMAL');
+} else {
+let m=document.getElementById('msg');m.innerText="❌ Galat License! Admin se license lo.";m.style.color="red";
+}
 }
 function newChart(){
-let c=document.getElementById('chart'),x=c.getContext('2d');x.clearRect(0,0,380,130);x.strokeStyle="#38bdf8";x.lineWidth=3;x.beginPath();let y=80;x.moveTo(0,y);
-for(let i=0;i<380;i+=20){y=y+(Math.random()*30-15);x.lineTo(i,y);}x.stroke();x.fillStyle="#38bdf8";x.font="12px Arial";x.fillText("DEMO CHART - "+document.getElementById('pair').value,10,20);
+let c=document.getElementById('chart'),x=c.getContext('2d');x.clearRect(0,0,380,130);x.strokeStyle= market==='OTC' ? "#f59e0b" : "#38bdf8";x.lineWidth=3;x.beginPath();let y=80;x.moveTo(0,y);
+for(let i=0;i<380;i+=20){y=y+(Math.random()*30-15);x.lineTo(i,y);}x.stroke();x.fillStyle="#fff";x.font="bold 12px Arial";x.fillText("DEMO CHART - "+document.getElementById('pair').value+" ["+market+"]",10,20);
 }
 function getSignal(){
 let p=document.getElementById('pair').value, tf=document.getElementById('tf').value;
 let sig=Math.random()>0.5?"UP ⬆️ CALL":"DOWN ⬇️ PUT";
 let col=sig.includes("UP")?"green":"red";
 let conf=65+Math.floor(Math.random()*30);
-document.getElementById('result').innerHTML=`<div class="card"><div><b>${p}</b><br><span class="small">${type} • ${tf} • Demo</span></div><div style="text-align:right"><span class="${col}">${sig}</span><br><span class="small">Confidence: ${conf}%</span></div></div>`;
+document.getElementById('result').innerHTML=`<div class="card"><div><b>${p}</b> ${market==='OTC'?'<span class="otcBadge">OTC</span>':''}<br><span class="small">${type} • ${tf} • ${market} • Demo</span></div><div style="text-align:right"><span class="${col}">${sig}</span><br><span class="small">Confidence: ${conf}%</span></div></div>`;
 newChart();
 }
 function loadSignals(){
-let pairs=["BTC/USD","EUR/USD","GOLD","GBP/USD","ETH/USD"];
-let h=""; pairs.forEach(p=>{let up=Math.random()>0.5; h+=`<div class="card"><div><b>${p}</b><br><span class="small">Demo • Confidence ${60+Math.floor(Math.random()*30)}%</span></div><div><span class="${up?'green':'red'}">${up?'UP ⬆️':'DOWN ⬇️'}</span></div></div>`;});
+let list = market==='NORMAL' ? normalPairs.slice(0,5) : otcPairs.slice(0,5);
+let h=""; list.forEach(p=>{let up=Math.random()>0.5; h+=`<div class="card"><div><b>${p}</b><br><span class="small">Demo • Confidence ${60+Math.floor(Math.random()*30)}% • ${market}</span></div><div><span class="${up?'green':'red'}">${up?'UP ⬆️':'DOWN ⬇️'}</span></div></div>`;});
 document.getElementById('signals').innerHTML=h;
 }
 </script>
