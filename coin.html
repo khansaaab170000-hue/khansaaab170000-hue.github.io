@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMEER COIN 🪙</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#0b0b15;color:white;text-align:center}
+.top{background:linear-gradient(90deg,#ffd700,#ff8c00);color:black;padding:18px}
+.top h1{font-size:28px}
+.coinBig{width:130px;height:130px;background:radial-gradient(circle,#fff176,#ffd700,#ff8c00);border-radius:50%;margin:20px auto;display:flex;align-items:center;justify-content:center;font-size:60px;border:5px solid #fff;box-shadow:0 0 30px #ffd700}
+.card{background:#1a1a2e;margin:12px;border-radius:15px;padding:15px}
+.card b{font-size:24px;color:#ffd700}
+.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #2a2a45}
+button{width:100%;padding:14px;margin:8px 0;border-radius:12px;border:0;font-weight:bold;font-size:16px}
+.btnGold{background:#ffd700;color:black}
+.btnGreen{background:#22c55e;color:white}
+.btnPurple{background:#7c3aed;color:white}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#0f0f1f;color:white;margin:6px 0;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="top"><h1>🪙 AMEER COIN</h1><p>LIKE FOLLOW WARS KA OFFICIAL COIN</p></div>
+
+<div class="coinBig">🪙</div>
+<h2>AMEER COIN <span style="color:#ffd700">AMR</span></h2>
+<p style="color:#aaa;font-size:13px">1 AMR = 10 Likes = 5 Follows = 20 Views</p>
+
+<div class="card">
+<p>TUMHARA BALANCE</p>
+<b id="bal">250 AMR</b><br>
+<span style="color:#22c55e">≈ Rs. 250</span>
+</div>
+
+<div class="card">
+<h3>📊 COIN INFO</h3>
+<div class="row"><span>Coin Naam</span><b>Ameer Coin</b></div>
+<div class="row"><span>Symbol</span><b>AMR</b></div>
+<div class="row"><span>Total Supply</span><b>1,000,000</b></div>
+<div class="row"><span>Owner</span><b>@ameer_khan</b></div>
+<div class="row"><span>Holders</span><b id="holders">1,245</b></div>
+</div>
+
+<div class="card">
+<h3>🎁 COIN KAMAO</h3>
+<button class="btnGold" onclick="earn(10,'Like Task')">❤️ LIKE Karo = +10 AMR</button>
+<button class="btnPurple" onclick="earn(15,'Follow Task')">➕ FOLLOW Karo = +15 AMR</button>
+<button class="btnGreen" onclick="earn(5,'View Task')">👁️ VIEW Karo = +5 AMR</button>
+<button class="btnGold" onclick="earn(50,'Daily Bonus')">🎁 DAILY BONUS = +50 AMR</button>
+</div>
+
+<div class="card">
+<h3>💸 COIN BHEJO</h3>
+<input id="to" placeholder="@kisko bhejna hai?">
+<input id="amt" type="number" placeholder="Kitne Coin?">
+<button class="btnGreen" onclick="send()">🚀 SEND COIN</button>
+<p id="msg" style="color:#22c55e"></p>
+</div>
+
+<div class="card" style="text-align:left">
+<h3>📜 HISTORY</h3>
+<div id="history"><div class="row"><span>Join Bonus</span><b style="color:#22c55e">+250 AMR</b></div></div>
+</div>
+
+<script>
+let bal=250;
+let holders=1245;
+function earn(n,task){
+bal+=n; holders+=1;
+document.getElementById('bal').innerText=bal+" AMR";
+document.getElementById('holders').innerText=holders.toLocaleString();
+document.getElementById('history').innerHTML+=`<div class="row"><span>${task}</span><b style="color:#22c55e">+${n} AMR</b></div>`;
+alert(task+" Done! +"+n+" AMR mil gaya! 🪙");
+}
+function send(){
+let to=document.getElementById('to').value;
+let amt=parseInt(document.getElementById('amt').value);
+if(!to || !amt){alert("Naam aur Coin likho bhai!");return;}
+if(amt>bal){alert("Itne coin nahi hain bhai!");return;}
+bal-=amt;
+document.getElementById('bal').innerText=bal+" AMR";
+document.getElementById('msg').innerText="✅ "+amt+" AMR "+to+" ko bhej diya!";
+document.getElementById('history').innerHTML+=`<div class="row"><span>Send to ${to}</span><b style="color:#ef4444">-${amt} AMR</b></div>`;
+}
+</script>
+</body>
+  </html>
