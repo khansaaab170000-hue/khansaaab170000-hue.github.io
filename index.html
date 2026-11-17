@@ -13,10 +13,9 @@ body{background:#020617;color:#fff;font-family:sans-serif;padding:12px;margin:0}
 .green{background:linear-gradient(180deg,#22c55e,#15803d);width:100%;padding:16px;font-size:19px;margin-top:12px;border:none;border-radius:30px;color:#fff;font-weight:900}
 .orange{background:linear-gradient(180deg,#fbbf24,#ea580c);width:100%;padding:16px;font-size:19px;margin-top:10px;border:none;border-radius:30px;color:#fff;font-weight:900}
 select{width:100%;padding:14px;border-radius:30px;background:#000;color:#fff;border:2px solid #00c6ff;font-size:18px;text-align:center;margin:8px 0}
-.signal{font-size:32px;font-weight:900;margin:15px;text-align:center}
+.signal{font-size:30px;font-weight:900;margin:15px;text-align:center}
 .live-box{background:#000;border:2px solid #22c55e;border-radius:18px;padding:12px;margin-top:10px;text-align:center}
 .timer{font-size:36px;color:#facc15;font-weight:900}
-.liveTime{font-size:18px;color:#4ade80;font-weight:bold}
 .chart{background:#000;border-radius:15px;padding:10px;margin-top:12px;height:140px;border:1px solid #1e293b}
 canvas{width:100%;height:90px}
 .live-badge{background:#22c55e;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:bold}
@@ -27,12 +26,25 @@ canvas{width:100%;height:90px}
 <h2>👑 Welcome, AMEER-5656 ✅ <span class="live-badge">● LIVE</span></h2>
 <p>1️⃣ Apna Option Chuno:</p>
 <p>Market Chuno:</p>
-<button class="btn blue active" id="btnLIVE" onclick="setMarket('LIVE')">📈 LIVE</button>
-<button class="btn blue" id="btnOTC" onclick="setMarket('OTC')">🔥 OTC MARKET</button>
-<p>Selected Market: <b id="mkt" style="color:#facc15">LIVE</b></p>
+<button class="btn blue" id="btnLIVE" onclick="setMarket('LIVE')">📈 LIVE</button>
+<button class="btn blue active" id="btnOTC" onclick="setMarket('OTC')">🔥 OTC MARKET</button>
+<p>Selected Market: <b id="mkt" style="color:#facc15">OTC</b></p>
 
-<p>Pair Chuno:</p>
-<select id="pair"><option>BTC/USD</option><option>EUR/USD</option><option>GBP/USD</option><option>USD/JPY</option><option>EUR/GBP</option></select>
+<p>Pair Chuno - Sab Pair + ARS:</p>
+<select id="pair">
+<optgroup label="🔥 FOREX - LIVE">
+<option>EUR/USD</option><option>GBP/USD</option><option>USD/JPY</option><option>AUD/USD</option><option>USD/CAD</option><option>NZD/USD</option><option>EUR/GBP</option><option>EUR/JPY</option><option>GBP/JPY</option><option>USD/CHF</option><option>EUR/AUD</option><option>GBP/AUD</option><option>USD/INR</option><option>EUR/CAD</option><option>AUD/JPY</option>
+</optgroup>
+<optgroup label="🇦🇷 ARS - ARGENTINA">
+<option>USD/ARS</option><option>EUR/ARS</option><option>GBP/ARS</option><option>AUD/ARS</option><option>JPY/ARS</option><option>BTC/ARS</option><option>ETH/ARS</option><option>USD/ARS (OTC)</option><option>EUR/ARS (OTC)</option><option>GBP/ARS (OTC)</option>
+</optgroup>
+<optgroup label="₿ CRYPTO">
+<option>BTC/USD</option><option>ETH/USD</option><option>LTC/USD</option><option>BNB/USD</option><option>SOL/USD</option><option>XRP/USD</option><option>DOGE/USD</option><option>ADA/USD</option><option>TRX/USD</option><option>MATIC/USD</option>
+</optgroup>
+<optgroup label="🔥 OTC MARKET - Sab Pair">
+<option>EUR/USD (OTC)</option><option>GBP/USD (OTC)</option><option>USD/JPY (OTC)</option><option>AUD/USD (OTC)</option><option>EUR/GBP (OTC)</option><option>USD/CAD (OTC)</option><option>NZD/USD (OTC)</option><option>EUR/JPY (OTC)</option><option>GBP/JPY (OTC)</option><option>BTC/USD (OTC)</option><option>ETH/USD (OTC)</option><option>USD/CHF (OTC)</option>
+</optgroup>
+</select>
 
 <p>Timeframe Chuno - Second + Minute:</p>
 <select id="timerSelect">
@@ -42,6 +54,7 @@ canvas{width:100%;height:90px}
 <option value="30">30 Second</option>
 <option value="60" selected>1 Minute</option>
 <option value="120">2 Minute</option>
+<option value="300">5 Minute</option>
 </select>
 
 <p>Signal Type:</p>
@@ -58,18 +71,17 @@ canvas{width:100%;height:90px}
 <div class="live-box">
 <div style="color:#4ade80;font-weight:bold">● LIVE TIME - <span id="liveTime">--:--:--</span></div>
 <div class="timer" id="timer">⏱️ 01 : 00</div>
-<div id="marketTimer" style="color:#00c6ff">LIVE MARKET - Timer Ready Hai</div>
+<div id="marketTimer" style="color:#00c6ff">OTC MARKET - Timer Ready Hai</div>
 </div>
 
 <div class="chart">
-<p style="margin:0;font-size:13px">LIVE CHART - <span id="chartPair">BTC/USD</span> [<span id="chartMkt">LIVE</span>] <span style="color:#22c55e">● LIVE</span></p>
+<p style="margin:0;font-size:13px">LIVE CHART - <span id="chartPair">EUR/USD</span> [<span id="chartMkt">OTC</span>] <span style="color:#22c55e">● LIVE</span></p>
 <canvas id="c"></canvas>
 </div>
-
 </div>
 
 <script>
-let type="SCALPING", market="LIVE";
+let type="SCALPING", market="OTC";
 let sec=60, interval;
 function setMarket(m){
   market=m;
@@ -93,7 +105,9 @@ function showTime(){
 function getSignal(){
   let s = ["🟢 LONG - UP LAGAO","🔴 SHORT - DOWN LAGAO"];
   let r = Math.floor(Math.random()*2);
-  document.getElementById("sig").innerHTML = s[r] + " | " + type + " | " + market;
+  let p = document.getElementById("pair").value;
+  document.getElementById("sig").innerHTML = s[r] + " | " + type + " | " + market + " | " + p;
+  document.getElementById("chartPair").innerHTML = p;
   clearInterval(interval);
   sec = parseInt(document.getElementById("timerSelect").value);
   showTime();
