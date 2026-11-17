@@ -1,87 +1,116 @@
-<div id="dash">
-<div class="box" style="text-align:left">
-<p>👑 Welcome, <b id="userName">User</b> ✅</p>
-<h3 style="margin:12px 0">1️⃣ Apna Option Chuno:</h3>
-<label class="small">Market Chuno:</label>
-<div class="opt">
-<button id="btnNormal" class="active" onclick="setMarket('NORMAL')">📈 NORMAL</button>
-<button id="btnOTC" onclick="setMarket('OTC')">🔥 OTC MARKET</button>
-</div>
-<p class="small" style="margin-top:6px">Selected Market: <b id="showMarket">NORMAL</b> <span id="otcNote"></span></p>
-<label class="small">Pair Chuno:</label>
-<select id="pair"></select>
-<label class="small">Timeframe Chuno:</label>
-<select id="tf"><option>1 Minute</option><option>5 Minutes</option><option>15 Minutes</option><option>1 Hour</option></select>
-<label class="small">Signal Type:</label>
-<div class="opt">
-<button onclick="setType(this,'SCALPING')">⚡ SCALPING</button>
-<button onclick="setType(this,'LONG')">📈 LONG</button>
-<button onclick="setType(this,'SHORT')">📉 SHORT</button>
-</div>
-<p class="small" style="margin-top:8px">Selected: <b id="showType">SCALPING</b></p>
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ameer Khan AI BOT PRO</title>
+<style>
+body{background:#000;color:#fff;font-family:sans-serif;padding:15px;margin:0;text-align:center}
+.box{background:#0a1a3a;padding:18px;border-radius:20px;border:2px solid #00c6ff}
+.btn{border:none;padding:13px 18px;border-radius:30px;color:#fff;font-weight:bold;font-size:15px;margin:5px}
+.blue{background:#00aaff}
+.green{background:#22c55e;width:100%;padding:15px;font-size:18px;margin-top:12px;border:none;border-radius:30px;color:#fff;font-weight:bold}
+.orange{background:#f59e0b;width:100%;padding:15px;font-size:18px;margin-top:10px;border:none;border-radius:30px;color:#fff;font-weight:bold}
+select{width:100%;padding:14px;border-radius:30px;background:#000;color:#fff;border:2px solid #00c6ff;font-size:18px;text-align:center;margin:8px 0}
+.signal{font-size:32px;font-weight:bold;margin:15px}
+.timer{font-size:32px;color:#facc15;font-weight:bold;background:#000;padding:10px;border-radius:15px;border:2px solid #facc15}
+.chart{background:#020617;border-radius:15px;padding:10px;margin-top:12px;height:120px}
+canvas{width:100%;height:80px}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>👑 Welcome, AMEER KHAN ✅</h2>
+
+<p>Market Chuno:</p>
+<button class="btn blue" onclick="setMarket('NORMAL')">📈 NORMAL</button>
+<button class="btn blue" onclick="setMarket('OTC')">🔥 OTC MARKET</button>
+<p>Selected Market: <b id="mkt" style="color:#facc15">NORMAL</b></p>
+
+<p>Pair Chuno:</p>
+<select id="pair"><option>BTC/USD</option><option>EUR/USD</option><option>GBP/USD</option><option>USD/JPY</option></select>
+
+<p>Timeframe Chuno:</p>
+<select id="tf"><option>1 Minute</option><option>2 Minute</option><option>5 Minute</option></select>
+
+<p>Signal Type:</p>
+<button class="btn blue" onclick="setType('SCALPING')">⚡ SCALPING</button>
+<button class="btn blue" onclick="setType('LONG')">📈 LONG</button>
+<button class="btn blue" onclick="setType('SHORT')">📉 SHORT</button>
+<p>Selected: <b id="stype">SCALPING</b></p>
+
 <button class="green" onclick="getSignal()">🎯 SIGNAL LO - ABHI</button>
 <button class="orange" onclick="newChart()">🔄 NAYA CHART</button>
-<canvas id="chart" width="380" height="130"></canvas>
-<div id="result"></div>
+
+<div class="signal" id="sig">READY...</div>
+
+<!-- YAHAN SECOND LAGA DIYA - NORMAL + OTC DONO KE LIYE -->
+<div class="timer" id="timer">⏱️ 00 : 60 Second</div>
+<p id="marketTimer" style="color:#00c6ff">NORMAL MARKET - Timer Ready Hai</p>
+<p id="liveTime" style="color:#aaa">Time: --:--:--</p>
+
+<div class="chart">
+<p style="margin:0;font-size:13px">LIVE CHART - <span id="chartPair">BTC/USD</span> [<span id="chartMkt">NORMAL</span>]</p>
+<canvas id="c"></canvas>
 </div>
-<div class="box">
-<h3 style="text-align:left">2️⃣ Aaj ke Signals - <span id="sigTitle">NORMAL + OTC</span>:</h3>
-<div id="signals"></div>
-<button onclick="loadSignals()">🔄 NEW SIGNALS</button>
-<button onclick="location.reload()" style="background:#1e293b">🚪 LOGOUT</button>
-<p class="small" style="margin-top:10px">⚠️ OTC Market broker ka apna hota hai. Ye DEMO hai. Real paisa mat lagao.</p>
-</div>
+
 </div>
 
 <script>
 let type="SCALPING", market="NORMAL";
-let normalPairs=["BTC/USD","EUR/USD","GBP/USD","GOLD","USD/JPY","ETH/USD"];
-let otcPairs=["EUR/USD OTC","GBP/USD OTC","USD/JPY OTC","AUD/USD OTC","EUR/GBP OTC","USD/CAD OTC","NZD/USD OTC","EUR/JPY OTC"];
-
-// License yahan chupaya hua hai - koi dekh nahi payega
-// Tumhare 3 license isme hain, code me nazar nahi ayenge
-let validKeys = ["QU1FRVItNTY1Ng==","QU1FRVItMTExMQ==","QU1FRVItMjIyMg=="].map(k=>atob(k));
+let sec=60, interval;
 
 function setMarket(m){
-market=m; document.getElementById('showMarket').innerText=m;
-document.getElementById('btnNormal').classList.toggle('active',m==='NORMAL');
-document.getElementById('btnOTC').classList.toggle('active',m==='OTC');
-document.getElementById('otcNote').innerHTML = m==='OTC' ? '<span class="otcBadge">OTC LIVE</span>' : '';
-document.getElementById('sigTitle').innerText=m;
-let sel=document.getElementById('pair'); sel.innerHTML="";
-let list = m==='NORMAL' ? normalPairs : otcPairs;
-list.forEach(p=>{let o=document.createElement('option'); o.text=p; sel.add(o);});
-newChart(); loadSignals();
+  market=m;
+  document.getElementById("mkt").innerHTML=m;
+  document.getElementById("chartMkt").innerHTML=m;
+  document.getElementById("marketTimer").innerHTML=m+" MARKET - Timer Ready Hai";
+  // Market badalte hi second phir se 60 kar do
+  clearInterval(interval);
+  sec=60;
+  document.getElementById("timer").innerHTML="⏱️ 00 : 60 Second";
 }
-function setType(el,t){type=t; document.getElementById('showType').innerText=t; document.querySelectorAll('.opt button').forEach(b=>{if(b.innerText.includes('SCALPING')||b.innerText.includes('LONG')||b.innerText.includes('SHORT')) b.classList.remove('active')}); el.classList.add('active');}
-function check(){
-let k=document.getElementById('key').value.toUpperCase().trim();
-if(validKeys.includes(k)){
-document.getElementById('login').style.display='none';
-document.getElementById('dash').style.display='block';
-document.getElementById('userName').innerText = k;
-setMarket('NORMAL');
-} else {
-let m=document.getElementById('msg');m.innerText="❌ Galat License! Admin se license lo.";m.style.color="red";
-}
-}
-function newChart(){
-let c=document.getElementById('chart'),x=c.getContext('2d');x.clearRect(0,0,380,130);x.strokeStyle= market==='OTC' ? "#f59e0b" : "#38bdf8";x.lineWidth=3;x.beginPath();let y=80;x.moveTo(0,y);
-for(let i=0;i<380;i+=20){y=y+(Math.random()*30-15);x.lineTo(i,y);}x.stroke();x.fillStyle="#fff";x.font="bold 12px Arial";x.fillText("DEMO CHART - "+document.getElementById('pair').value+" ["+market+"]",10,20);
-}
+
+function setType(t){ type=t; document.getElementById("stype").innerHTML=t; }
+
 function getSignal(){
-let p=document.getElementById('pair').value, tf=document.getElementById('tf').value;
-let sig=Math.random()>0.5?"UP ⬆️ CALL":"DOWN ⬇️ PUT";
-let col=sig.includes("UP")?"green":"red";
-let conf=65+Math.floor(Math.random()*30);
-document.getElementById('result').innerHTML=`<div class="card"><div><b>${p}</b> ${market==='OTC'?'<span class="otcBadge">OTC</span>':''}<br><span class="small">${type} • ${tf} • ${market} • Demo</span></div><div style="text-align:right"><span class="${col}">${sig}</span><br><span class="small">Confidence: ${conf}%</span></div></div>`;
-newChart();
+  let s = ["🟢 LONG - UP LAGAO","🔴 SHORT - DOWN LAGAO"];
+  let r = Math.floor(Math.random()*2);
+  document.getElementById("sig").innerHTML = s[r] + " | " + type + " | " + market;
+
+  // SECOND WALA TIMER - NORMAL + OTC DONO MEIN CHALEGA
+  clearInterval(interval);
+  sec=60;
+  interval=setInterval(()=>{
+    sec--;
+    document.getElementById("timer").innerHTML = "⏱️ 00 : " + (sec<10?"0"+sec:sec) + " Second";
+    document.getElementById("marketTimer").innerHTML = market + " MARKET - " + sec + " Second Baaki Hai";
+    if(sec<=0){
+      clearInterval(interval);
+      document.getElementById("timer").innerHTML="⏱️ TIME KHATAM - NAYA SIGNAL LO";
+    }
+  },1000);
 }
-function loadSignals(){
-let list = market==='NORMAL' ? normalPairs.slice(0,5) : otcPairs.slice(0,5);
-let h=""; list.forEach(p=>{let up=Math.random()>0.5; h+=`<div class="card"><div><b>${p}</b><br><span class="small">Demo • Confidence ${60+Math.floor(Math.random()*30)}% • ${market}</span></div><div><span class="${up?'green':'red'}">${up?'UP ⬆️':'DOWN ⬇️'}</span></div></div>`;});
-document.getElementById('signals').innerHTML=h;
+
+function newChart(){
+  draw();
+  document.getElementById("chartPair").innerHTML=document.getElementById("pair").value;
 }
+
+function draw(){
+  let cv=document.getElementById("c"), ctx=cv.getContext("2d");
+  cv.width=300; cv.height=80;
+  ctx.clearRect(0,0,300,80);
+  ctx.strokeStyle="#00c6ff"; ctx.lineWidth=2; ctx.beginPath();
+  let y=40; ctx.moveTo(0,y);
+  for(let x=0;x<=300;x+=15){ y=40+Math.random()*30-15; ctx.lineTo(x,y); }
+  ctx.stroke();
+}
+draw();
+
+setInterval(()=>{
+  let d=new Date();
+  document.getElementById("liveTime").innerHTML="Time: "+d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+},1000);
 </script>
 </body>
 </html>
