@@ -2,35 +2,47 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ameer Khan AI BOT PRO</title>
+<title>Ameer Khan AI BOT PRO - LIVE</title>
 <style>
-body{background:#000;color:#fff;font-family:sans-serif;padding:15px;margin:0;text-align:center}
-.box{background:#0a1a3a;padding:18px;border-radius:20px;border:2px solid #00c6ff}
-.btn{border:none;padding:13px 18px;border-radius:30px;color:#fff;font-weight:bold;font-size:15px;margin:5px}
-.blue{background:#00aaff}
-.green{background:#22c55e;width:100%;padding:15px;font-size:18px;margin-top:12px;border:none;border-radius:30px;color:#fff;font-weight:bold}
-.orange{background:#f59e0b;width:100%;padding:15px;font-size:18px;margin-top:10px;border:none;border-radius:30px;color:#fff;font-weight:bold}
+*{box-sizing:border-box}
+body{background:#020617;color:#fff;font-family:sans-serif;padding:12px;margin:0}
+.box{background:linear-gradient(180deg,#0a1a3a,#071130);padding:18px;border-radius:24px;border:2px solid #00c6ff;box-shadow:0 0 25px #00c6ff55}
+.btn{border:none;padding:14px 16px;border-radius:30px;color:#fff;font-weight:bold;font-size:15px;margin:5px;cursor:pointer}
+.blue{background:linear-gradient(180deg,#38bdf8,#0284c7)}
+.active{outline:3px solid #facc15;transform:scale(1.03)}
+.green{background:linear-gradient(180deg,#22c55e,#15803d);width:100%;padding:16px;font-size:19px;margin-top:12px;border:none;border-radius:30px;color:#fff;font-weight:900}
+.orange{background:linear-gradient(180deg,#fbbf24,#ea580c);width:100%;padding:16px;font-size:19px;margin-top:10px;border:none;border-radius:30px;color:#fff;font-weight:900}
 select{width:100%;padding:14px;border-radius:30px;background:#000;color:#fff;border:2px solid #00c6ff;font-size:18px;text-align:center;margin:8px 0}
-.signal{font-size:32px;font-weight:bold;margin:15px}
-.timer{font-size:32px;color:#facc15;font-weight:bold;background:#000;padding:10px;border-radius:15px;border:2px solid #facc15}
-.chart{background:#020617;border-radius:15px;padding:10px;margin-top:12px;height:120px}
-canvas{width:100%;height:80px}
+.signal{font-size:32px;font-weight:900;margin:15px;text-align:center}
+.live-box{background:#000;border:2px solid #22c55e;border-radius:18px;padding:12px;margin-top:10px;text-align:center}
+.timer{font-size:36px;color:#facc15;font-weight:900}
+.liveTime{font-size:18px;color:#4ade80;font-weight:bold}
+.chart{background:#000;border-radius:15px;padding:10px;margin-top:12px;height:140px;border:1px solid #1e293b}
+canvas{width:100%;height:90px}
+.live-badge{background:#22c55e;color:#fff;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:bold}
 </style>
 </head>
 <body>
 <div class="box">
-<h2>👑 Welcome, AMEER KHAN ✅</h2>
-
+<h2>👑 Welcome, AMEER-5656 ✅ <span class="live-badge">● LIVE</span></h2>
+<p>1️⃣ Apna Option Chuno:</p>
 <p>Market Chuno:</p>
-<button class="btn blue" onclick="setMarket('NORMAL')">📈 NORMAL</button>
-<button class="btn blue" onclick="setMarket('OTC')">🔥 OTC MARKET</button>
-<p>Selected Market: <b id="mkt" style="color:#facc15">NORMAL</b></p>
+<button class="btn blue active" id="btnLIVE" onclick="setMarket('LIVE')">📈 LIVE</button>
+<button class="btn blue" id="btnOTC" onclick="setMarket('OTC')">🔥 OTC MARKET</button>
+<p>Selected Market: <b id="mkt" style="color:#facc15">LIVE</b></p>
 
 <p>Pair Chuno:</p>
-<select id="pair"><option>BTC/USD</option><option>EUR/USD</option><option>GBP/USD</option><option>USD/JPY</option></select>
+<select id="pair"><option>BTC/USD</option><option>EUR/USD</option><option>GBP/USD</option><option>USD/JPY</option><option>EUR/GBP</option></select>
 
-<p>Timeframe Chuno:</p>
-<select id="tf"><option>1 Minute</option><option>2 Minute</option><option>5 Minute</option></select>
+<p>Timeframe Chuno - Second + Minute:</p>
+<select id="timerSelect">
+<option value="5">5 Second</option>
+<option value="10">10 Second</option>
+<option value="15">15 Second</option>
+<option value="30">30 Second</option>
+<option value="60" selected>1 Minute</option>
+<option value="120">2 Minute</option>
+</select>
 
 <p>Signal Type:</p>
 <button class="btn blue" onclick="setType('SCALPING')">⚡ SCALPING</button>
@@ -43,17 +55,80 @@ canvas{width:100%;height:80px}
 
 <div class="signal" id="sig">READY...</div>
 
-<!-- YAHAN SECOND LAGA DIYA - NORMAL + OTC DONO KE LIYE -->
-<div class="timer" id="timer">⏱️ 00 : 60 Second</div>
-<p id="marketTimer" style="color:#00c6ff">NORMAL MARKET - Timer Ready Hai</p>
-<p id="liveTime" style="color:#aaa">Time: --:--:--</p>
+<div class="live-box">
+<div style="color:#4ade80;font-weight:bold">● LIVE TIME - <span id="liveTime">--:--:--</span></div>
+<div class="timer" id="timer">⏱️ 01 : 00</div>
+<div id="marketTimer" style="color:#00c6ff">LIVE MARKET - Timer Ready Hai</div>
+</div>
 
 <div class="chart">
-<p style="margin:0;font-size:13px">LIVE CHART - <span id="chartPair">BTC/USD</span> [<span id="chartMkt">NORMAL</span>]</p>
+<p style="margin:0;font-size:13px">LIVE CHART - <span id="chartPair">BTC/USD</span> [<span id="chartMkt">LIVE</span>] <span style="color:#22c55e">● LIVE</span></p>
 <canvas id="c"></canvas>
 </div>
 
 </div>
 
 <script>
-let type="SCALPING", mark
+let type="SCALPING", market="LIVE";
+let sec=60, interval;
+function setMarket(m){
+  market=m;
+  document.getElementById("mkt").innerHTML=m;
+  document.getElementById("chartMkt").innerHTML=m;
+  document.getElementById("marketTimer").innerHTML=m+" MARKET - Timer Ready Hai";
+  document.getElementById("btnLIVE").classList.remove("active");
+  document.getElementById("btnOTC").classList.remove("active");
+  if(m=="LIVE") document.getElementById("btnLIVE").classList.add("active");
+  else document.getElementById("btnOTC").classList.add("active");
+  clearInterval(interval);
+  sec = parseInt(document.getElementById("timerSelect").value);
+  showTime();
+}
+function setType(t){ type=t; document.getElementById("stype").innerHTML=t; }
+function showTime(){
+  let mm = Math.floor(sec/60);
+  let ss = sec%60;
+  document.getElementById("timer").innerHTML = "⏱️ " + (mm<10?"0"+mm:mm) + " : " + (ss<10?"0"+ss:ss);
+}
+function getSignal(){
+  let s = ["🟢 LONG - UP LAGAO","🔴 SHORT - DOWN LAGAO"];
+  let r = Math.floor(Math.random()*2);
+  document.getElementById("sig").innerHTML = s[r] + " | " + type + " | " + market;
+  clearInterval(interval);
+  sec = parseInt(document.getElementById("timerSelect").value);
+  showTime();
+  interval=setInterval(()=>{
+    sec--;
+    showTime();
+    document.getElementById("marketTimer").innerHTML = market + " MARKET - " + sec + " Second Baaki Hai";
+    if(sec<=0){
+      clearInterval(interval);
+      document.getElementById("timer").innerHTML="⏱️ TIME KHATAM - NAYA SIGNAL LO";
+    }
+  },1000);
+}
+function newChart(){
+  draw();
+  document.getElementById("chartPair").innerHTML=document.getElementById("pair").value;
+}
+function draw(){
+  let cv=document.getElementById("c"), ctx=cv.getContext("2d");
+  cv.width=340; cv.height=90;
+  ctx.clearRect(0,0,340,90);
+  ctx.strokeStyle="#00c6ff"; ctx.lineWidth=2.5; ctx.beginPath();
+  let y=45; ctx.moveTo(0,y);
+  for(let x=0;x<=340;x+=12){ y=45+Math.random()*32-16; ctx.lineTo(x,y); }
+  ctx.stroke();
+  ctx.fillStyle="#22c55e"; ctx.beginPath(); ctx.arc(335,y,5,0,7); ctx.fill();
+}
+draw();
+setInterval(()=>{
+  let d=new Date();
+  let h=d.getHours()<10?"0"+d.getHours():d.getHours();
+  let mi=d.getMinutes()<10?"0"+d.getMinutes():d.getMinutes();
+  let se=d.getSeconds()<10?"0"+d.getSeconds():d.getSeconds();
+  document.getElementById("liveTime").innerHTML=h+":"+mi+":"+se;
+},1000);
+</script>
+</body>
+</html>
